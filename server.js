@@ -28,20 +28,20 @@ app.get("/api/notes", (req, res) => {
 	});
 });
 
-// app.get("/api/notes/:id", (req, res) => {
-// 	if (req.params.id) {
-// 		const note_id = req.params.id;
-// 		for (let i = 0; i < notes.length; i++) {
-// 			const currentNote = notes[i];
-// 			if (currentNote.id === note_id) {
-// 				res.status(200).json(currentNote);
-// 				return;
-// 			}
-// 		}
-// 	}
-// });
+app.get("/api/notes/:id", (req, res) => {
+	if (req.params.id) {
+		const note_id = req.params.id;
+		for (let i = 0; i < notes.length; i++) {
+			const currentNote = notes[i];
+			if (currentNote.id === note_id) {
+				res.status(200).json(currentNote);
+				return;
+			}
+		}
+	}
+});
 
-app.post("/api/notes", (req, res) => {
+app.post("/api/notes", async (req, res) => {
 	const { title, text } = req.body;
 
 	if (title && text) {
@@ -50,22 +50,25 @@ app.post("/api/notes", (req, res) => {
 				console.log(err);
 				return res.status(500).json({ err });
 			}
+			const id = uuid();
 			const data = JSON.parse(notes);
+		
 			data.push({
 				title,
 				text,
-				id: uuid(),
+				id,
 			});
 
 			fs.writeFile("./db/db.json", JSON.stringify(data, null, 2), (err) => {
 				if (err) {
-					console.log(err);
+					console.error(err);
 					return res.status(500).json({ err });
 				}
 				console.info("Note added successfully");
 				res.json({
 					title,
 					text,
+					id,
 				});
 			});
 		});
