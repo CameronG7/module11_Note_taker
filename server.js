@@ -28,18 +28,18 @@ app.get("/api/notes", (req, res) => {
 	});
 });
 
-app.get("/api/notes/:id", (req, res) => {
-	if (req.params.id) {
-		const note_id = req.params.id;
-		for (let i = 0; i < notes.length; i++) {
-			const currentNote = notes[i];
-			if (currentNote.id === note_id) {
-				res.status(200).json(currentNote);
-				return;
-			}
-		}
-	}
-});
+// app.get("/api/notes/:id", (req, res) => {
+// 	if (req.params.id) {
+// 		const note_id = req.params.id;
+// 		for (let i = 0; i < notes.length; i++) {
+// 			const currentNote = notes[i];
+// 			if (currentNote.id === note_id) {
+// 				res.status(200).json(currentNote);
+// 				return;
+// 			}
+// 		}
+// 	}
+// });
 
 app.post("/api/notes", (req, res) => {
 	const { title, text } = req.body;
@@ -65,7 +65,7 @@ app.post("/api/notes", (req, res) => {
 				console.info("Note added successfully");
 				res.json({
 					title,
-					text
+					text,
 				});
 			});
 		});
