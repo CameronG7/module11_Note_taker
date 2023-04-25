@@ -2,24 +2,24 @@ const express = require("express");
 const fs = require("fs");
 const notes = require("./db/db.json");
 const path = require("path");
-const uuid = require("./helpers/uuid");
+const uuid = require("./helpers/uuid"); // used this because a similar use case was presented in a lesson
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.static("public"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); // boilerplate middleware
 
 app.get("/", (req, res) =>
-	res.sendFile(path.join(__dirname, "/public/index.html"))
+	res.sendFile(path.join(__dirname, "/public/index.html")) // home page
 );
 
 app.get("/notes", (req, res) =>
-	res.sendFile(path.join(__dirname, "/public/notes.html"))
+	res.sendFile(path.join(__dirname, "/public/notes.html")) // note page
 );
 
-app.get("/api/notes", (req, res) => {
+app.get("/api/notes", (req, res) => { // get request for full notes list
 	fs.readFile("./db/db.json", "utf8", (err, data) => {
 		if (err) {
 			return res.status(500).json({ err });
@@ -28,13 +28,13 @@ app.get("/api/notes", (req, res) => {
 	});
 });
 
-app.get("/api/notes/:id", (req, res) => {
+app.get("/api/notes/:id", (req, res) => { // loops for until note id found then responds with that note
 	if (req.params.id) {
 		const note_id = req.params.id;
 		for (let i = 0; i < notes.length; i++) {
 			const currentNote = notes[i];
 			if (currentNote.id === note_id) {
-				res.status(200).json(currentNote);
+				res.status(200).json(JSON.parse(currentNote));
 				return;
 			}
 		}
@@ -44,7 +44,7 @@ app.get("/api/notes/:id", (req, res) => {
 app.post("/api/notes", async (req, res) => {
 	const { title, text } = req.body;
 
-	if (title && text) {
+	if (title && text) { //read file , save contents to array , push user note to array, rewrite file with array. append is also valid here
 		fs.readFile("./db/db.json", "utf8", (err, notes) => {
 			if (err) {
 				console.log(err);
@@ -65,7 +65,7 @@ app.post("/api/notes", async (req, res) => {
 					return res.status(500).json({ err });
 				}
 				console.info("Note added successfully");
-				res.json({
+				res.json({ // respond with newly saved notes
 					title,
 					text,
 					id,
@@ -77,7 +77,7 @@ app.post("/api/notes", async (req, res) => {
 	}
 });
 
-app.delete("/api/notes/:id", (req, res) => {
+app.delete("/api/notes/:id", (req, res) => { // same as above but splice the note out of the array, breaks out early when note found
 	if (req.params.id) {
 		const note_id = req.params.id;
 		fs.readFile("./db/db.json", "utf8", (err, data) => {
